@@ -1,6 +1,8 @@
 const express = require("express");
 const path = require("path");
 
+const noteData = require("./db/db.json");
+
 const PORT = process.env.PORT || 3001;
 
 const app = express();
@@ -21,5 +23,8 @@ app.get("/", (req, res) =>
 app.get("/notes", (req, res) =>
   res.sendFile(path.join(__dirname, "/public/notes.html"))
 );
+
+// GET Route for notes in db
+app.get("/api/notes", (req, res) => res.json(noteData));
 
 app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
