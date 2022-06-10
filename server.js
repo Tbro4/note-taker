@@ -2,6 +2,7 @@ const { randomUUID } = require("crypto");
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const util = require("util");
 
 const uuid = require("./helpers/uuid");
 const noteData = require("./db/db.json");
@@ -30,6 +31,39 @@ app.get("/notes", (req, res) =>
 // GET Route for notes in db
 app.get("/api/notes", (req, res) => res.json(noteData));
 
+// Promise version of fs.readFile
+const readFromFile = util.promisify(fs.readFile);
+
+/**
+ *  Function to write data to the JSON file given a destination and some content
+ *  @param {string} destination The file you want to write to.
+ *  @param {object} content The content you want to write to the file.
+ *  @returns {void} Nothing
+ */
+const writeToFile = (destination, content) =>
+  fs.writeFile(destination, JSON.stringify(content, null, 4), (err) =>
+    err ? console.error(err) : console.info(`\nData written to ${destination}`)
+  );
+
+/**
+ *  Function to read data from a given a file and append some content
+ *  @param {object} content The content you want to append to the file.
+ *  @param {string} file The path to the file you want to save to.
+ *  @returns {void} Nothing
+ */
+
+const readAndAppend = (content, file) => {
+  fs.readFile(file, "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+    } else {
+      const parsedData = JSON.parse(data);
+      parsedData.push(content);
+      writeToFile(file, parsedData);
+    }
+  });
+};
+
 //POST route to save to notes in db
 app.post("/api/notes", (req, res) => {
   console.info(`${req.method} request received to add a new note`);
@@ -37,45 +71,23 @@ app.post("/api/notes", (req, res) => {
   //Detructure from req.body
   const { title, text } = req.body;
 
-  if (title && text) {
+  if (req.body) {
     const newNote = {
       title,
       text,
       note_id: uuid(),
     };
 
-    //Obtain existing notes
-    fs.readFile("./db/db.json", "utf8", (err, data) => {
-      if (err) {
-        console.error(err);
-      } else {
-        // Convert string into JSON object
-        const parsedNotes = JSON.parse(data);
-
-        // Add a new review
-        parsedNotes.push(newNote);
-
-        // Write updated reviews back to the file
-        fs.writeFile(
-          "./db/db.json",
-          JSON.stringify(parsedNotes, null, 4),
-          (writeErr) =>
-            writeErr
-              ? console.error(writeErr)
-              : console.info("Successfully updated notes!")
-        );
-      }
-    });
-
+    readAndAppend(newNote, "./db/db.json");
     const response = {
       status: "success",
       body: newNote,
     };
 
-    console.log(response);
-    res.status(201).json(response);
+    console.info(`Note added successfully 🚀`);
+    res.json(response);
   } else {
-    res.status(500).json("Error in saving note");
+    res.error("Error in adding Note");
   }
 });
 
