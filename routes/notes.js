@@ -9,9 +9,11 @@ const noteDb = require("../db/db.json");
 
 // GET Route for notes in db
 //  localhost:3001/api/notes
-notes.get("/", (req, res) =>
-  readFromFile("./db/db.json").then((data) => res.json(JSON.parse(data)))
-);
+notes.get("/", (req, res) => {
+  console.info(`${req.method} request received to add a new note`);
+
+  readFromFile("./db/db.json").then((data) => res.json(JSON.parse(data)));
+});
 
 //POST route to save to notes in db
 notes.post("/", (req, res) => {
@@ -45,14 +47,8 @@ notes.delete("/:id", (req, res) => {
   if (req.params.id) {
     console.info(`${req.method} request received to delete note`);
     const deleteId = req.params.id;
-    // for (let i = 0; i < noteDb.length; i++) {
-    //   const currentNote = noteDb[i];
-    //   if (currentNote.id === deleteId) {
-    //     console.log(currentNote);
-    //     res.status(200).json(currentNote);
-    //   }
-    // }
     readAndDelete(deleteId, "./db/db.json");
+    res.json("Deleted successfully");
   } else {
     res.status(400).send("Note ID not provided");
   }
