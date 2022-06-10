@@ -1,21 +1,23 @@
-# note-taker
+# Note Taker
 
-- Link Get Started button to go to Note page
-  needs to load previous notes (stored in db.json)
-  use fs.readFile (Activity 20, Solves, server.js line 47)
+## Description
 
-- when app detects that both Title and Note fields are not empty, a save button appears in the nav
+A note-taking application that allows the user to enter a note Title and Text and save the note to a list of notes on the left side of the page. Each saved note is appended with a funtional delete button as well.
 
--Upon save, note is saved to db and moved to the right side of the page with the other saves notes
+![homepage](./assets/Homepage.png)
 
--When clicking on existing note, it is moved to the right (for editing?)
-need to use data to autofill the fields
+Click "Get Started" to open Notes page
 
--Add functionality to the Write icon so that an empty note appears
+![Notespage](./assets/GetStarted.png)
 
-05/server.js/line 31 -- // Fallback route for when a user attempts to visit routes that don't exist
-app.get("\*", (req, res) =>
-res.send(
-`Make a GET request using Insomnia to <a href="http://localhost:${PORT}/api/terms">http://localhost:${PORT}/api/terms</a>`
-)
-);
+Enter first note
+
+![First Entry](./assets/firstItem.png)
+
+Any existing note on the left can be clicked to display a read-only version of the note Title asnd Text.
+
+![Click to see saved note](./assets/ClickToSeeNote.png)
+
+Data is stored in db.json file either on the local server (if repo is cloned to local machine) or Heroku server.
+
+[Click here to use app deployed from Heroku](https://lit-river-55101.herokuapp.com/)
